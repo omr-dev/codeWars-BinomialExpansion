@@ -1,17 +1,26 @@
-//expand("(2f+4)^6"); // returns "64f^6+768f^5+3840f^4+10240f^3+15360f^2+12288f+4096"
+//expand("(x+1)^2"),"x^2+2x+1"
 
 function expand(expr) {
+  console.log("expr:", expr);
   let objBinom = getObjBinom(expr);
   let result = [];
   let exponent = Number(objBinom.exponent);
+  if (exponent == 1) {
+    return (
+      objBinom.factorOfA +
+      objBinom.letterOfA +
+      objBinom.typeOfCalculation +
+      objBinom.b
+    );
+  }
 
   for (let k = 0; k <= exponent; k++) {
     let subResult = "";
-    let beforExtension =
-      getFactorFromPascalsTriangle(exponent, k) *
-      objBinom.factorOfA ** (exponent - k) *
-      objBinom.b ** k;
-    subResult = beforExtension + getExtension(k, exponent, objBinom.letterOfA);
+    subResult =
+      getBeforeExtension(k, objBinom) +
+      getExtension(k, exponent, objBinom.letterOfA);
+
+    
 
     result.push(subResult);
   }
@@ -20,7 +29,7 @@ function expand(expr) {
   console.log(result);
   return result;
 }
-expand("((2f+4)^6");
+expand("(x+1)^2");
 
 function getObjBinom(expr) {
   let regExp = /\((\-*\d*)(\w)(\+|\-)(\d+)\)\^(\d+)+/;
@@ -71,4 +80,16 @@ function getExtension(k, exponent, letter) {
   } else {
     return letter + "^" + (exponent - k);
   }
+}
+function getBeforeExtension(k, objBinom) {
+  let result = 0;
+  let exponent = Number(objBinom.exponent);
+  result = getFactorFromPascalsTriangle(exponent, k) * objBinom.b ** k;
+  if (objBinom.factorOfA) {
+    result *= objBinom.factorOfA ** (exponent - k);
+  }
+  if (result == 1 && k != exponent) {
+    return "";
+  }
+  return result;
 }
