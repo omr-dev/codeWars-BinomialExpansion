@@ -3,22 +3,24 @@
 function expand(expr) {
   let objBinom = getObjBinom(expr);
   let result = [];
-  let k = 0;
-  for (let n = objBinom.exponent; n >= 0; n--) {
-    let subElement = getSubA(n, k, objBinom) + getSubB(k, objBinom);
+  let exponent = Number(objBinom.exponent);
 
-    if (n != objBinom.exponent && n != 0) {
-      subElement =
-        getFactorFromPascalsTriangle(objBinom.exponent, k) + subElement;
-    }
-    result.push(subElement);
-    k++;
+  for (let k = 0; k <= exponent; k++) {
+    let subResult = "";
+    let beforExtension =
+      getFactorFromPascalsTriangle(exponent, k) *
+      objBinom.factorOfA ** (exponent - k) *
+      objBinom.b ** k;
+    subResult = beforExtension + getExtension(k, exponent, objBinom.letterOfA);
+
+    result.push(subResult);
   }
+
   result = result.join("+");
   console.log(result);
   return result;
 }
-expand("(x+1)^2");
+expand("((2f+4)^6");
 
 function getObjBinom(expr) {
   let regExp = /\((\-*\d*)(\w)(\+|\-)(\d+)\)\^(\d+)+/;
@@ -37,32 +39,7 @@ function getObjBinom(expr) {
     exponent: exponent,
   };
 }
-function getSubA(n, k, objBinom) {
-  let result = "";
-  if (k == objBinom.exponent) {
-    return "";
-  } else {
-    if (objBinom.exponent - k == 1) {
-      result = "" + objBinom.letterOfA;
-    } else {
-      result = "" + objBinom.letterOfA + "^" + (objBinom.exponent - k);
-    }
-    if (objBinom.factorOfA) {
-      result = objBinom.factorOfA ** (n - k) + result;
-    }
-  }
 
-  return result;
-}
-function getSubB(k, objBinom) {
-  if (k == 0) {
-    return "";
-  } else if (objBinom.b ** k == 1 && k != objBinom.exponent) {
-    return "";
-  } else {
-    return "" + objBinom.b ** k;
-  }
-}
 function getFactorFromPascalsTriangle(exponent, column) {
   let table = [[1], [1, 1]];
   for (let lineNo = 2; lineNo <= exponent; lineNo++) {
@@ -86,4 +63,12 @@ function getFactorFromPascalsTriangle(exponent, column) {
 
   return result;
 }
-getFactorFromPascalsTriangle(5, 2);
+function getExtension(k, exponent, letter) {
+  if (k == exponent) {
+    return "";
+  } else if (k == exponent - 1) {
+    return letter;
+  } else {
+    return letter + "^" + (exponent - k);
+  }
+}
